@@ -1,1 +1,18 @@
+DECLARE
+    CURSOR cur_customers IS
+        SELECT c.CustomerID, c.DOB, l.LoanID, l.InterestRate
+        FROM Customers c
+        JOIN Loans l ON c.CustomerID = l.CustomerID;
+    v_age NUMBER;
+BEGIN
+    FOR rec IN cur_customers LOOP
+        v_age := TRUNC((SYSDATE - rec.DOB) / 365.25);
+        IF v_age > 60 THEN
+            UPDATE Loans
+            SET InterestRate = InterestRate * 0.99
+            WHERE LoanID = rec.LoanID;
+        END IF;
+    END LOOP;
+    COMMIT;
+END;
 
